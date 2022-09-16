@@ -1,9 +1,25 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import to from 'await-to-js';
+import { Platform } from './interfaces/Platform';
 
 const fs = require('fs');
 const keyfile = require('../keyfile.json');
 
+/**
+ * * Adds the authentication headers to all IGDB API requests
+ */
+axios.interceptors.request.use(async (config) => {
+	if (!config?.url?.includes('https://id.twitch.tv/oauth2/token')) {
+		const headers = await authenticate();
+		config.headers = { ...config.headers, ...headers };
+	}
+
+	return config;
+});
+
+/**
+ * * Gets the oauth2 token from Twitch to authenticate all IGDB API requests
+ */
 async function authenticate() {
 	const [e, r] = await to(axios.post(`https://id.twitch.tv/oauth2/token?client_id=${keyfile.client_id}&client_secret=${keyfile.client_secret}&grant_type=client_credentials`));
 
@@ -25,11 +41,37 @@ async function authenticate() {
 	};
 }
 
+/**
+ * * Gets the full list of platforms and their ids available on IGDB
+ */
+async function getPlatforms(): Promise<Platform[]> {
+	const [e, r] = await to(
+		axios.post<Platform[]>(
+			'https://api.igdb.com/v4/platforms',
+			`fields abbreviation,alternative_name,name;
+            limit 500;`
+		)
+	);
+
+	if (e) {
+		throw e;
+	}
+
+	return r.data.sort((a, b) => {
+		if (a.name < b.name) {
+			return -1;
+		}
+		if (a.name > b.name) {
+			return 1;
+		}
+		return 0;
+	});
+}
+
 (async () => {
 	try {
-		const config: AxiosRequestConfig = {
-			headers: await authenticate(),
-		};
+		const platforms = await getPlatforms();
+		console.log(platforms);
 
 		const [e, r] = await to(
 			axios.post(
@@ -37,10 +79,9 @@ async function authenticate() {
 				`query games "Nintendo Switch" {
                 fields name,rating,platforms.name,parent_game;
                 sort rating desc; 
-                where platforms !=n & platforms = {130} & rating >= 50;
+                where platforms !=n & platforms = {${platforms.find((platform) => platform.name === 'Nintendo Switch')?.id}} & rating >= 50;
                 limit 500;
-                };`,
-				config
+                };`
 			)
 		);
 
