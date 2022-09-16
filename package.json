@@ -1,19 +1,26 @@
 {
-	"name": "igdb-exclusives",
-	"version": "1.0.0",
-	"description": "A simple Node application to get video game console exclusives from IGDB.",
-	"main": "dist/index.js",
-	"scripts": {
-		"start": "tsc && nodemon"
-	},
-	"dependencies": {
-		"await-to-js": "^3.0.0",
-		"axios": "^0.26.1"
-	},
-	"devDependencies": {
-		"@types/node": "^18.7.18",
-		"typescript": "^4.5.5"
-	},
-	"author": "ChrisScott9456",
-	"license": "ISC"
+  "name": "igdb-exclusives",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "await-to-js": "^3.0.0",
+    "axios": "^0.27.2",
+    "next": "12.3.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "18.7.18",
+    "@types/react": "18.0.20",
+    "@types/react-dom": "18.0.6",
+    "eslint": "8.23.1",
+    "eslint-config-next": "12.3.0",
+    "typescript": "4.8.3"
+  }
 }
