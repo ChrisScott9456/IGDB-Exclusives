@@ -1,5 +1,19 @@
 {
-  "devDependencies": {
-    "typescript": "^4.5.5"
-  }
+	"name": "igdb-exclusives",
+	"version": "1.0.0",
+	"description": "A simple Node application to get video game console exclusives from IGDB.",
+	"main": "dist/index.js",
+	"scripts": {
+		"start": "tsc && nodemon"
+	},
+	"dependencies": {
+		"await-to-js": "^3.0.0",
+		"axios": "^0.26.1"
+	},
+	"devDependencies": {
+		"@types/node": "^18.7.18",
+		"typescript": "^4.5.5"
+	},
+	"author": "ChrisScott9456",
+	"license": "ISC"
 }
