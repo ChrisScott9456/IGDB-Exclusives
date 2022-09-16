@@ -31,7 +31,18 @@ async function authenticate() {
 			headers: await authenticate(),
 		};
 
-		const [e, r] = await to(axios.post('https://api.igdb.com/v4/games', 'fields name,platforms;', config));
+		const [e, r] = await to(
+			axios.post(
+				'https://api.igdb.com/v4/multiquery',
+				`query games "Nintendo Switch" {
+                fields name,rating,platforms.name,parent_game;
+                sort rating desc; 
+                where platforms !=n & platforms = {130} & rating >= 50;
+                limit 500;
+                };`,
+				config
+			)
+		);
 
 		if (e) {
 			throw e;
