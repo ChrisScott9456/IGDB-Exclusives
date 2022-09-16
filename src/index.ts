@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import to from 'await-to-js';
 import { Platform } from './interfaces/Platform';
 
-const fs = require('fs');
+// const fs = require('fs');
 const keyfile = require('../keyfile.json');
 
 /**
@@ -28,11 +28,11 @@ async function authenticate() {
 	} else if (r) {
 		keyfile.token = r.data.access_token;
 
-		await fs.writeFileSync('keyfile.json', `{ "client_id": "${keyfile.client_id}", "client_secret": "${keyfile.client_secret}", "token": "${r.data.access_token}" }`, (err: Error) => {
-			if (err) {
-				console.error(err);
-			}
-		});
+		// await fs.writeFileSync('keyfile.json', `{ "client_id": "${keyfile.client_id}", "client_secret": "${keyfile.client_secret}", "token": "${r.data.access_token}" }`, (err: Error) => {
+		// 	if (err) {
+		// 		console.error(err);
+		// 	}
+		// });
 	}
 
 	return {
@@ -44,7 +44,7 @@ async function authenticate() {
 /**
  * * Gets the full list of platforms and their ids available on IGDB
  */
-async function getPlatforms(): Promise<Platform[]> {
+export async function getPlatforms(): Promise<Platform[]> {
 	const [e, r] = await to(
 		axios.post<Platform[]>(
 			'https://api.igdb.com/v4/platforms',
@@ -68,31 +68,31 @@ async function getPlatforms(): Promise<Platform[]> {
 	});
 }
 
-(async () => {
-	try {
-		const platforms = await getPlatforms();
-		console.log(platforms);
+// (async () => {
+// 	try {
+// 		const platforms = await getPlatforms();
+// 		console.log(platforms);
 
-		const [e, r] = await to(
-			axios.post(
-				'https://api.igdb.com/v4/multiquery',
-				`query games "Nintendo Switch" {
-                fields name,rating,platforms.name,parent_game;
-                sort rating desc; 
-                where platforms !=n & platforms = {${platforms.find((platform) => platform.name === 'Nintendo Switch')?.id}} & rating >= 50;
-                limit 500;
-                };`
-			)
-		);
+// 		const [e, r] = await to(
+// 			axios.post(
+// 				'https://api.igdb.com/v4/multiquery',
+// 				`query games "Nintendo Switch" {
+//                 fields name,rating,platforms.name,parent_game;
+//                 sort rating desc;
+//                 where platforms !=n & platforms = {${platforms.find((platform) => platform.name === 'Nintendo Switch')?.id}} & rating >= 50;
+//                 limit 500;
+//                 };`
+// 			)
+// 		);
 
-		if (e) {
-			throw e;
-		}
+// 		if (e) {
+// 			throw e;
+// 		}
 
-		console.log(r);
-		console.log();
-	} catch (e) {
-		console.error(e);
-		console.log();
-	}
-})();
+// 		console.log(r);
+// 		console.log();
+// 	} catch (e) {
+// 		console.error(e);
+// 		console.log();
+// 	}
+// })();
