@@ -1,8 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import to from 'await-to-js';
-import { Platform } from './interfaces/Platform';
+import { Platform } from '../interfaces/Platform';
+import { MultiQuery } from '../interfaces/MultiQuery';
 
-// const fs = require('fs');
+const fs = require('fs');
 const keyfile = require('../keyfile.json');
 
 /**
@@ -28,11 +29,11 @@ async function authenticate() {
 	} else if (r) {
 		keyfile.token = r.data.access_token;
 
-		// await fs.writeFileSync('keyfile.json', `{ "client_id": "${keyfile.client_id}", "client_secret": "${keyfile.client_secret}", "token": "${r.data.access_token}" }`, (err: Error) => {
-		// 	if (err) {
-		// 		console.error(err);
-		// 	}
-		// });
+		await fs.writeFileSync('keyfile.json', `{ "client_id": "${keyfile.client_id}", "client_secret": "${keyfile.client_secret}", "token": "${r.data.access_token}" }`, (err: Error) => {
+			if (err) {
+				console.error(err);
+			}
+		});
 	}
 
 	return {
@@ -68,31 +69,24 @@ export async function getPlatforms(): Promise<Platform[]> {
 	});
 }
 
-// (async () => {
-// 	try {
-// 		const platforms = await getPlatforms();
-// 		console.log(platforms);
+export async function getExclusives(id: number): Promise<Platform[]> {
+	const [e, r] = await to(
+		axios.post<MultiQuery<Platform[]>[]>(
+			'https://api.igdb.com/v4/multiquery',
+			`query games "Platform" {
+                fields name,rating,platforms.name,parent_game;
+                sort rating desc;
+                where platforms !=n & platforms = {${id}} & rating >= 50;
+                limit 500;
+                };`
+		)
+	);
 
-// 		const [e, r] = await to(
-// 			axios.post(
-// 				'https://api.igdb.com/v4/multiquery',
-// 				`query games "Nintendo Switch" {
-//                 fields name,rating,platforms.name,parent_game;
-//                 sort rating desc;
-//                 where platforms !=n & platforms = {${platforms.find((platform) => platform.name === 'Nintendo Switch')?.id}} & rating >= 50;
-//                 limit 500;
-//                 };`
-// 			)
-// 		);
+	console.log(r || e);
 
-// 		if (e) {
-// 			throw e;
-// 		}
+	if (e) {
+		throw e;
+	}
 
-// 		console.log(r);
-// 		console.log();
-// 	} catch (e) {
-// 		console.error(e);
-// 		console.log();
-// 	}
-// })();
+	return r.data[0].result;
+}

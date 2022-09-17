@@ -2,8 +2,8 @@ import type { GetServerSideProps, NextPage } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
 import Main, { MainProps } from '../components/main';
-import { getPlatforms } from '../src';
-import { Platform } from '../src/interfaces/Platform';
+import { getPlatforms } from '../igdb';
+import { Platform } from '../interfaces/Platform';
 import styles from '../styles/Home.module.css';
 
 const Home: NextPage<{ platforms: Platform[] }> = ({ platforms }) => {
@@ -31,7 +31,9 @@ const Home: NextPage<{ platforms: Platform[] }> = ({ platforms }) => {
 	);
 };
 
-export const getServerSideProps: GetServerSideProps<MainProps> = async () => {
+export const getServerSideProps: GetServerSideProps<MainProps> = async ({ req, res }) => {
+	res.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=59');
+
 	const platforms = await getPlatforms();
 	return {
 		props: {
