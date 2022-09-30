@@ -1,11 +1,10 @@
-import { Button, Select } from '@chakra-ui/react';
-import Link from 'next/link';
+import { Select } from '@chakra-ui/react';
+import to from 'await-to-js';
 import { useRouter } from 'next/router';
 import { NextPage } from 'next/types';
 import { useState } from 'react';
 import { getExclusives } from '../igdb';
 import { Platform } from '../interfaces/Platform';
-
 export interface MainProps {
 	platforms: Platform[];
 }
@@ -13,7 +12,7 @@ export interface MainProps {
 const Main: NextPage<MainProps> = ({ platforms }) => {
 	const router = useRouter();
 
-	const handleChange = (e: any) => {
+	const handleChange = async (e: any) => {
 		router.push(`/platform/${e.target.value}`);
 	};
 

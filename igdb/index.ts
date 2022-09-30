@@ -3,7 +3,7 @@ import to from 'await-to-js';
 import { Platform } from '../interfaces/Platform';
 import { MultiQuery } from '../interfaces/MultiQuery';
 
-const fs = require('fs');
+// const fs = require('fs');
 const keyfile = require('../keyfile.json');
 
 /**
@@ -29,11 +29,11 @@ async function authenticate() {
 	} else if (r) {
 		keyfile.token = r.data.access_token;
 
-		await fs.writeFileSync('keyfile.json', `{ "client_id": "${keyfile.client_id}", "client_secret": "${keyfile.client_secret}", "token": "${r.data.access_token}" }`, (err: Error) => {
-			if (err) {
-				console.error(err);
-			}
-		});
+		// await fs.writeFileSync('keyfile.json', `{ "client_id": "${keyfile.client_id}", "client_secret": "${keyfile.client_secret}", "token": "${r.data.access_token}" }`, (err: Error) => {
+		// 	if (err) {
+		// 		console.error(err);
+		// 	}
+		// });
 	}
 
 	return {
