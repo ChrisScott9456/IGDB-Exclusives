@@ -2,6 +2,8 @@ import axios, { AxiosRequestConfig } from 'axios';
 import to from 'await-to-js';
 import { Platform } from '../interfaces/Platform';
 import { MultiQuery } from '../interfaces/MultiQuery';
+import { Game } from '../interfaces/Game';
+import { Cover } from '../interfaces/Cover';
 
 // const fs = require('fs');
 const keyfile = require('../keyfile.json');
@@ -69,12 +71,12 @@ export async function getPlatforms(): Promise<Platform[]> {
 	});
 }
 
-export async function getExclusives(id: number): Promise<Platform[]> {
+export async function getExclusives(id: number): Promise<Game[]> {
 	const [e, r] = await to(
-		axios.post<MultiQuery<Platform[]>[]>(
+		axios.post<MultiQuery<Game[]>[]>(
 			'https://api.igdb.com/v4/multiquery',
 			`query games "Platform" {
-                fields name,rating,platforms.name,parent_game;
+                fields name,rating,platforms.name,parent_game,cover;
                 sort rating desc;
                 where platforms !=n & platforms = {${id}} & rating >= 50;
                 limit 500;
@@ -82,11 +84,35 @@ export async function getExclusives(id: number): Promise<Platform[]> {
 		)
 	);
 
-	console.log(r || e);
+	console.log('MULTIQUERY');
 
 	if (e) {
 		throw e;
 	}
 
-	return r.data[0].result;
+	const output = r.data[0].result;
+	const coverURLs = await getCovers(output.map((el) => el.cover));
+
+	output.forEach((el) => {
+		el.cover = coverURLs.find((innerEl) => `${el.cover}` == `${innerEl.id}`)?.image_id || '';
+	});
+
+	return output;
+}
+
+export async function getCovers(coverIds: string[]): Promise<Cover[]> {
+	const [e, r] = await to(
+		axios.post<Cover[]>(
+			'https://api.igdb.com/v4/covers',
+			`fields image_id;
+            where id = (${coverIds.join(',')});
+            limit 500;`
+		)
+	);
+
+	if (e) {
+		throw e;
+	}
+
+	return r.data;
 }

@@ -32,8 +32,6 @@ const Home: NextPage<{ platforms: Platform[] }> = ({ platforms }) => {
 };
 
 export const getServerSideProps: GetServerSideProps<MainProps> = async ({ req, res }) => {
-	res.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=59');
-
 	const platforms = await getPlatforms();
 	return {
 		props: {

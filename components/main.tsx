@@ -6,10 +6,11 @@ import { useState } from 'react';
 import { getExclusives } from '../igdb';
 import { Platform } from '../interfaces/Platform';
 export interface MainProps {
+	platformId?: string;
 	platforms: Platform[];
 }
 
-const Main: NextPage<MainProps> = ({ platforms }) => {
+const Main: NextPage<MainProps> = ({ platformId, platforms }) => {
 	const router = useRouter();
 
 	const handleChange = async (e: any) => {
@@ -18,7 +19,7 @@ const Main: NextPage<MainProps> = ({ platforms }) => {
 
 	return (
 		<div>
-			<Select placeholder="Select Platform" onChange={handleChange}>
+			<Select placeholder="Select Platform" onChange={handleChange} defaultValue={platformId}>
 				{platforms.map((platform) => (
 					<option value={platform.id} key={platform.id}>
 						{platform.name}
